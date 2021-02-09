@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for purchase in my_purchases %}
+	<form method="post" action="{% url 'return' %}">
+		{% csrf_token %}
+		{{ purchase }}
+		<input type="hidden" name="purchases_return" value="{{purchase.pk}}">
+		<input type="submit" value="Return" >
+	</form>
+{% endfor %}
+{% endblock %}

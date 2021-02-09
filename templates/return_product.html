@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for return_purchases in object_list %}
+	{{ return_purchases }}
+	<form method="post" action="{% url 'purchase_return_accept' return_purchases.pk %}">
+		{% csrf_token %}
+		<input type="hidden" name="stock" value="{{return_purchases.product_return.pk}}">
+		<input type="hidden" name="product_pk" value="{{return_purchases.product_return.product.pk}}">
+		<input type="hidden" name="users" value="{{return_purchases.product_return.user}}">
+		<input type="submit" value="Accept">
+	</form>
+	<form method="post" action="{% url 'purchase_return_reject' return_purchases.pk %}">
+		{% csrf_token %}
+    	<input type="submit" value="Reject">
+	</form>
+{% endfor %}
+{% endblock %}

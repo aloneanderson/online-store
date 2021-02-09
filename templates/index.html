@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if request.user.is_authenticated %}
+<h1 style="color: orangered"> Hello, {{ request.user }}</h1>
+<h4 style="color: green">Money:{{request.user.wallet}} $</h4>
+<h3><a href="{% url 'my_purchase' %}">My purchases</a></h3>
+<h3><a href="{% url 'logout_page' %}">Log Out</a></h3>
+{% else %}
+<h3><a href="{% url 'register_page' %}">Registration</a></h3>
+<h3><a href="{% url 'login_page' %}">Sign In</a></h3>
+{% endif %}
+<h4><a href="{% url 'product_list' %}">View all products</a></h4>
+{% if messages %}
+{% for message in messages %}
+<h2 style="color: fuchsia;">{{ message|safe }}</h2>
+{% endfor %}
+{% endif %}
+{% if request.user.is_authenticated %}
+{% if not request.user.is_superuser %}
+{% for pl in product_list %}
+<h3>{{ pl }}</h3>
+<h5>Available: {{ pl.stock }}</h5>
+<h5>Price: {{ pl.price }} $</h5>
+<div>Description: {{ pl.description}}</div>
+<div style="background: #020202 url({{ pl.image_url }}); background-size: cover; background-position: center; background-repeat: no-repeat; width: 30%; height: 250px;"></div>
+<form method="post" action="{% url 'purchase_create' pl.pk %}">
+    {% csrf_token %}
+    {{form}}
+    <input type="hidden" name="product_pk" value="{{pl.pk}}">
+    <input type="submit" value="Buy">
+</form>
+{% endfor %}
+{% endif %}
+{% else %}
+{% for product in product_list %}
+<h3>{{ product }}</h3>
+<h5>Available: {{ product.stock }}</h5>
+<h5>Price: {{ product.price }} $</h5>
+<div>Description: {{ product.description}}</div>
+<div style="background: #020202 url({{ product.image_url }}); background-size: cover; background-position: center; background-repeat: no-repeat; width: 30%; height: 250px;"></div>
+{% endfor %}
+{% endif %}
+
+
+<br>
+{% if request.user.is_superuser %}
+<h4><a href="{% url 'create_product' %}">Create Product</a><br></h4>
+{% for product in product_list %}
+<h3>{{ product }}</h3>
+<h5>Available: {{ product.stock }}</h5>
+<h5>Price: {{ product.price }} $</h5>
+<div>Description: {{ product.description}}</div>
+<div style="background: #020202 url({{ product.image_url }}); background-size: cover; background-position: center; background-repeat: no-repeat; width: 30%; height: 250px;"></div>
+<a href="{% url 'update_product' product.pk %}">Product settings</a><br>
+{% endfor %}
+<h2 ><a href="{% url 'return_product' %}">View Returns Products</a></h2>
+
+{% endif %}
+
+{% endblock %}

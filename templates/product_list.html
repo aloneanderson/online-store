@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 style="color: orangered"> Hello, {{ request.user }}</h1>
+<h4 style="color: green">Money:{{request.user.wallet}} $</h4>
+<br>
+{% if messages %}
+	{% for message in messages %}
+		{{ message|safe }}
+	{% endfor %}
+{% endif %}
+{% if request.user.is_authenticated %}
+	{% if not request.user.is_superuser %}
+		{% for pl in product_list %}
+		<h3>{{ pl }}</h3>
+		<h5>Available: {{ pl.stock }}</h5>
+		<h5>Price: {{ pl.price }} $</h5>
+		<div>Description: {{ pl.description}}</div>
+			<br>
+			<div style="background: #020202 url({{ pl.image_url }}); background-size: cover; background-position: center; background-repeat: no-repeat; width: 30%; height: 250px;"></div>
+			<form method="post" action="{% url 'purchase_create' pl.pk %}">
+				{% csrf_token %}
+				{{form}}
+				<input type="hidden" name="product_pk" value="{{pl.pk}}">
+				<input type="submit" value="Buy" >
+			</form>
+		{% endfor %}
+	{% endif %}
+{% endif %}
+
+	
+
+{% endblock %}
